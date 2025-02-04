@@ -1,8 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { LogIn } from "lucide-react";
 import { SignUpModal } from "./SignUpModal";
+import { LoginModal } from "./LoginModal";
 
 const Navbar = () => {
   return (
@@ -19,12 +19,7 @@ const Navbar = () => {
           </div>
           <div className="flex items-center space-x-4">
             <SignUpModal />
-            <Button
-              className="bg-gray-900 text-white hover:bg-gray-800 transition-all duration-300 flex items-center gap-2"
-            >
-              <LogIn className="h-4 w-4" />
-              Log in
-            </Button>
+            <LoginModal />
           </div>
         </div>
       </div>
