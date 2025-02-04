@@ -10,17 +10,20 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AppleIcon, Mail } from "lucide-react";
+import { AppleIcon } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function SignUpModal() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
-    username: "",
     password: "",
     confirmPassword: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,11 +33,99 @@ export function SignUpModal() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add sign-up logic here
-    console.log("Form submitted:", formData);
-    setOpen(false);
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Passwords do not match",
+        description: "Please ensure both passwords are identical.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Sign up failed",
+          description: error.message,
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Please check your email to confirm your account.",
+      });
+      setOpen(false);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "An error occurred",
+        description: "Unable to create account. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        }
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Sign up failed",
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "An error occurred",
+        description: "Unable to sign up with Google. Please try again.",
+      });
+    }
+  };
+
+  const handleAppleSignUp = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: window.location.origin,
+        }
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Sign up failed",
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "An error occurred",
+        description: "Unable to sign up with Apple. Please try again.",
+      });
+    }
   };
 
   return (
@@ -68,17 +159,6 @@ export function SignUpModal() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              name="username"
-              placeholder="Choose a username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -102,8 +182,8 @@ export function SignUpModal() {
               required
             />
           </div>
-          <Button type="submit" className="w-full">
-            Create account
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Create account"}
           </Button>
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
@@ -120,7 +200,7 @@ export function SignUpModal() {
               variant="outline"
               type="button"
               className="w-full"
-              onClick={() => console.log("Google sign-in")}
+              onClick={handleGoogleSignUp}
             >
               <svg
                 className="mr-2 h-4 w-4"
@@ -138,7 +218,7 @@ export function SignUpModal() {
               variant="outline"
               type="button"
               className="w-full"
-              onClick={() => console.log("Apple sign-in")}
+              onClick={handleAppleSignUp}
             >
               <AppleIcon className="mr-2 h-4 w-4" />
               Apple

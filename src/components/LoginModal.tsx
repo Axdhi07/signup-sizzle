@@ -13,14 +13,16 @@ import { Label } from "@/components/ui/label";
 import { AppleIcon } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function LoginModal() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,32 +32,89 @@ export function LoginModal() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulating a check for invalid credentials
-    // This should be replaced with actual authentication logic
-    const isValidCredentials = false; // This would be your actual auth check
+    setIsLoading(true);
     
-    if (!isValidCredentials) {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message,
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "You have been logged in successfully.",
+      });
+      setOpen(false);
+    } catch (error) {
       toast({
         variant: "destructive",
-        title: "Invalid credentials",
-        description: "The username or password you entered is incorrect.",
+        title: "An error occurred",
+        description: "Unable to log in. Please try again.",
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-    
-    console.log("Login form submitted:", formData);
-    setOpen(false);
   };
 
-  const handleSocialLogin = (provider: 'google' | 'apple') => {
-    // Simulating a failed social login
-    toast({
-      variant: "destructive",
-      title: "Account not found",
-      description: `No account found with this ${provider} ID. Please sign up first.`,
-    });
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        }
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "An error occurred",
+        description: "Unable to log in with Google. Please try again.",
+      });
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: window.location.origin,
+        }
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "An error occurred",
+        description: "Unable to log in with Apple. Please try again.",
+      });
+    }
   };
 
   return (
@@ -76,12 +135,13 @@ export function LoginModal() {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
-              id="username"
-              name="username"
-              placeholder="Enter your username"
-              value={formData.username}
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter your email"
+              value={formData.email}
               onChange={handleChange}
               required
             />
@@ -98,8 +158,8 @@ export function LoginModal() {
               required
             />
           </div>
-          <Button type="submit" className="w-full">
-            Log in
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Log in"}
           </Button>
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
@@ -116,7 +176,7 @@ export function LoginModal() {
               variant="outline"
               type="button"
               className="w-full"
-              onClick={() => handleSocialLogin('google')}
+              onClick={handleGoogleLogin}
             >
               <svg
                 className="mr-2 h-4 w-4"
@@ -134,7 +194,7 @@ export function LoginModal() {
               variant="outline"
               type="button"
               className="w-full"
-              onClick={() => handleSocialLogin('apple')}
+              onClick={handleAppleLogin}
             >
               <AppleIcon className="mr-2 h-4 w-4" />
               Apple
