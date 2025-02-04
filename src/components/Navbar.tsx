@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { LogIn } from "lucide-react";
+import { SignUpModal } from "./SignUpModal";
 
 const Navbar = () => {
   return (
@@ -17,12 +18,7 @@ const Navbar = () => {
             <h1 className="text-xl font-semibold">Your Logo</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 transition-all duration-300"
-            >
-              Sign up
-            </Button>
+            <SignUpModal />
             <Button
               className="bg-gray-900 text-white hover:bg-gray-800 transition-all duration-300 flex items-center gap-2"
             >
