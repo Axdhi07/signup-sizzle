@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AppleIcon } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export function LoginModal() {
   const [open, setOpen] = useState(false);
@@ -19,6 +20,7 @@ export function LoginModal() {
     username: "",
     password: "",
   });
+  const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,9 +32,30 @@ export function LoginModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add login logic here
+    // Simulating a check for invalid credentials
+    // This should be replaced with actual authentication logic
+    const isValidCredentials = false; // This would be your actual auth check
+    
+    if (!isValidCredentials) {
+      toast({
+        variant: "destructive",
+        title: "Invalid credentials",
+        description: "The username or password you entered is incorrect.",
+      });
+      return;
+    }
+    
     console.log("Login form submitted:", formData);
     setOpen(false);
+  };
+
+  const handleSocialLogin = (provider: 'google' | 'apple') => {
+    // Simulating a failed social login
+    toast({
+      variant: "destructive",
+      title: "Account not found",
+      description: `No account found with this ${provider} ID. Please sign up first.`,
+    });
   };
 
   return (
@@ -93,7 +116,7 @@ export function LoginModal() {
               variant="outline"
               type="button"
               className="w-full"
-              onClick={() => console.log("Google sign-in")}
+              onClick={() => handleSocialLogin('google')}
             >
               <svg
                 className="mr-2 h-4 w-4"
@@ -111,7 +134,7 @@ export function LoginModal() {
               variant="outline"
               type="button"
               className="w-full"
-              onClick={() => console.log("Apple sign-in")}
+              onClick={() => handleSocialLogin('apple')}
             >
               <AppleIcon className="mr-2 h-4 w-4" />
               Apple
