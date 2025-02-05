@@ -105,7 +105,7 @@ export function LoginModal() {
         provider: 'apple',
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
-          scope: 'email name',
+          scopes: 'email name', // Fixed: Changed 'scope' to 'scopes'
         }
       });
 
@@ -119,8 +119,8 @@ export function LoginModal() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "An error occurred",
-        description: "Unable to log in with Apple. Please try again.",
+          title: "An error occurred",
+          description: "Unable to log in with Apple. Please try again.",
       });
     }
   };
@@ -212,4 +212,4 @@ export function LoginModal() {
       </DialogContent>
     </Dialog>
   );
-};
+}
