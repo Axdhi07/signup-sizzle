@@ -57,8 +57,10 @@ export type Database = {
           description: string | null
           frequency: string
           id: string
+          last_completion_date: string | null
           priority: number | null
           streak: number | null
+          streak_start_date: string | null
           title: string
           total_completions: number | null
           updated_at: string
@@ -69,8 +71,10 @@ export type Database = {
           description?: string | null
           frequency: string
           id?: string
+          last_completion_date?: string | null
           priority?: number | null
           streak?: number | null
+          streak_start_date?: string | null
           title: string
           total_completions?: number | null
           updated_at?: string
@@ -81,8 +85,10 @@ export type Database = {
           description?: string | null
           frequency?: string
           id?: string
+          last_completion_date?: string | null
           priority?: number | null
           streak?: number | null
+          streak_start_date?: string | null
           title?: string
           total_completions?: number | null
           updated_at?: string

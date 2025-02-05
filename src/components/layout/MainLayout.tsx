@@ -1,8 +1,7 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronDown, LogOut, Settings, User } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +26,6 @@ interface Profile {
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -69,40 +67,44 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link to="/dashboard" className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-primary">
                 HabitQuest
-              </Link>
+              </div>
               <nav className="hidden md:ml-8 md:flex md:space-x-4">
-                <Link
-                  to="/dashboard"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/dashboard")}
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   Dashboard
-                </Link>
-                <Link
-                  to="/shop"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/shop")}
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   Shop
-                </Link>
-                <Link
-                  to="/about"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/about")}
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   About Us
-                </Link>
-                <Link
-                  to="/plan"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/create-plan")}
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   Create Your Plan
-                </Link>
+                </Button>
               </nav>
             </div>
             
             <div className="flex items-center">
               {profile && (
-                <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
@@ -126,7 +128,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                           {profile.level}
                         </div>
                       </div>
-                      <ChevronDown className="h-4 w-4 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
@@ -140,13 +141,13 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                         </div>
                       </div>
                     </div>
-                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <DropdownMenuItem onClick={() => navigate("/profile/edit")}>
                       <User className="mr-2 h-4 w-4" />
-                      Edit Profile
+                      Edit Profile Details
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/settings")}>
+                    <DropdownMenuItem onClick={() => navigate("/profile/customize")}>
                       <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                      Customize Profile
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
