@@ -76,6 +76,10 @@ export function LoginModal() {
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         }
       });
 
@@ -101,6 +105,7 @@ export function LoginModal() {
         provider: 'apple',
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
+          scope: 'email name',
         }
       });
 
@@ -207,4 +212,4 @@ export function LoginModal() {
       </DialogContent>
     </Dialog>
   );
-}
+};
