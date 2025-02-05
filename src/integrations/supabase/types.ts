@@ -9,7 +9,194 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      habit_logs: {
+        Row: {
+          coins_earned: number | null
+          completed_at: string
+          habit_id: string
+          id: string
+          user_id: string
+          xp_earned: number | null
+        }
+        Insert: {
+          coins_earned?: number | null
+          completed_at?: string
+          habit_id: string
+          id?: string
+          user_id: string
+          xp_earned?: number | null
+        }
+        Update: {
+          coins_earned?: number | null
+          completed_at?: string
+          habit_id?: string
+          id?: string
+          user_id?: string
+          xp_earned?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_logs_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "habit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          created_at: string
+          description: string | null
+          frequency: string
+          id: string
+          priority: number | null
+          streak: number | null
+          title: string
+          total_completions: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          frequency: string
+          id?: string
+          priority?: number | null
+          streak?: number | null
+          title: string
+          total_completions?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          frequency?: string
+          id?: string
+          priority?: number | null
+          streak?: number | null
+          title?: string
+          total_completions?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          coins: number | null
+          created_at: string
+          display_name: string | null
+          id: string
+          level: number | null
+          updated_at: string
+          username: string | null
+          xp: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          coins?: number | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          level?: number | null
+          updated_at?: string
+          username?: string | null
+          xp?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          coins?: number | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          level?: number | null
+          updated_at?: string
+          username?: string | null
+          xp?: number | null
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          id: string
+          joined_at: string
+          role: string | null
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          role?: string | null
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          role?: string | null
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

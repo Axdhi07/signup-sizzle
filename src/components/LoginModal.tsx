@@ -14,6 +14,7 @@ import { AppleIcon } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export function LoginModal() {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ export function LoginModal() {
   });
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,6 +58,7 @@ export function LoginModal() {
         description: "You have been logged in successfully.",
       });
       setOpen(false);
+      navigate("/dashboard");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -72,7 +75,7 @@ export function LoginModal() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: `${window.location.origin}/dashboard`,
         }
       });
 
@@ -97,7 +100,7 @@ export function LoginModal() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: `${window.location.origin}/dashboard`,
         }
       });
 
