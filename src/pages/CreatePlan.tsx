@@ -34,6 +34,7 @@ const CreatePlan = () => {
     priority: "1",
     scheduledTime: "",
     durationMinutes: "30",
+    frequency: "daily", // Added default frequency
   });
 
   const { data: userGoals } = useQuery({
@@ -84,6 +85,7 @@ const CreatePlan = () => {
         priority: parseInt(formData.priority),
         scheduled_time: formData.scheduledTime,
         duration_minutes: parseInt(formData.durationMinutes),
+        frequency: formData.frequency, // Added frequency field
       });
 
       if (error) throw error;
@@ -101,6 +103,7 @@ const CreatePlan = () => {
         priority: "1",
         scheduledTime: "",
         durationMinutes: "30",
+        frequency: "daily",
       });
     } catch (error) {
       toast({
@@ -173,6 +176,27 @@ const CreatePlan = () => {
                       {goal.category.replace("_", " ").toUpperCase()}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Frequency
+              </label>
+              <Select
+                value={formData.frequency}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, frequency: value })
+                }
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
                 </SelectContent>
               </Select>
             </div>
