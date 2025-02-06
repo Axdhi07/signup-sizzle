@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Fire } from "lucide-react";
+import { Flame } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 interface Profile {
@@ -152,7 +152,7 @@ const Dashboard = () => {
               {/* Streak Display */}
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full border-2 border-orange-400 flex items-center justify-center mb-2">
-                  <Fire className="h-6 w-6 text-orange-400" />
+                  <Flame className="h-6 w-6 text-orange-400" />
                 </div>
                 <span className="text-sm font-medium">{highestStreak} day streak</span>
               </div>
@@ -194,7 +194,7 @@ const Dashboard = () => {
                   )}
                   {habit.streak && habit.streak > 0 && (
                     <div className="mt-2 flex items-center text-sm text-orange-500">
-                      <Fire className="h-4 w-4 mr-1" />
+                      <Flame className="h-4 w-4 mr-1" />
                       {habit.streak} day streak
                     </div>
                   )}
