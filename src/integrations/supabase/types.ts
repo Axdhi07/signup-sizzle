@@ -53,12 +53,15 @@ export type Database = {
       }
       habits: {
         Row: {
+          category: string | null
           created_at: string
           description: string | null
+          duration_minutes: number | null
           frequency: string
           id: string
           last_completion_date: string | null
           priority: number | null
+          scheduled_time: string | null
           streak: number | null
           streak_start_date: string | null
           title: string
@@ -67,12 +70,15 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           description?: string | null
+          duration_minutes?: number | null
           frequency: string
           id?: string
           last_completion_date?: string | null
           priority?: number | null
+          scheduled_time?: string | null
           streak?: number | null
           streak_start_date?: string | null
           title: string
@@ -81,12 +87,15 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           description?: string | null
+          duration_minutes?: number | null
           frequency?: string
           id?: string
           last_completion_date?: string | null
           priority?: number | null
+          scheduled_time?: string | null
           streak?: number | null
           streak_start_date?: string | null
           title?: string
@@ -95,6 +104,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_habit_category"
+            columns: ["user_id", "category"]
+            isOneToOne: false
+            referencedRelation: "user_goals"
+            referencedColumns: ["user_id", "category"]
+          },
           {
             foreignKeyName: "habits_user_id_fkey"
             columns: ["user_id"]
@@ -200,6 +216,33 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_goals: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          target: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          target?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          target?: string | null
+          user_id?: string
         }
         Relationships: []
       }

@@ -14,8 +14,10 @@ import { AppleIcon } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export function SignUpModal() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -52,9 +54,6 @@ export function SignUpModal() {
       const { error, data } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
       });
 
       if (error) {
@@ -66,13 +65,14 @@ export function SignUpModal() {
         return;
       }
 
-      setEmailSent(true);
-      toast({
-        title: "Check your email",
-        description: "We've sent you a confirmation link to complete your registration.",
-      });
+      // Close modal and redirect to onboarding
+      setOpen(false);
+      navigate("/onboarding");
       
-      // Don't close the modal or redirect yet - wait for email confirmation
+      toast({
+        title: "Welcome!",
+        description: "Your account has been created successfully.",
+      });
     } catch (error) {
       toast({
         variant: "destructive",
@@ -89,7 +89,7 @@ export function SignUpModal() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/onboarding`,
         }
       });
 
@@ -114,7 +114,7 @@ export function SignUpModal() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/onboarding`,
         }
       });
 
