@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -42,6 +43,20 @@ const Onboarding = () => {
     { value: "fitness", label: "Fitness" },
     { value: "career", label: "Career Growth" },
   ];
+
+  // Fetch available habit templates
+  const { data: templates } = useQuery({
+    queryKey: ["habitTemplates"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("habit_templates")
+        .select("*")
+        .order("title");
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,26 +87,41 @@ const Onboarding = () => {
       if (goalError) throw goalError;
 
       // If a template was selected, create habits from the template
-      if (formData.selectedTemplate) {
-        const { data: template, error: templateError } = await supabase
-          .from("habit_templates")
-          .select("*")
-          .eq("id", formData.selectedTemplate)
-          .single();
-
-        if (templateError) throw templateError;
-
-        if (template) {
+      if (formData.selectedTemplate && templates) {
+        const selectedTemplate = templates.find(t => t.id === formData.selectedTemplate);
+        
+        if (selectedTemplate) {
           const { error: habitError } = await supabase.from("habits").insert({
             user_id: user.id,
-            title: template.title,
-            description: template.description,
-            category: template.category,
-            frequency: template.frequency,
-            theme: template.theme,
+            title: selectedTemplate.title,
+            description: selectedTemplate.description,
+            category: formData.category,
+            frequency: selectedTemplate.frequency,
+            theme: selectedTemplate.theme,
+            duration_minutes: selectedTemplate.duration_minutes,
           });
 
           if (habitError) throw habitError;
+
+          // Initialize habit statistics
+          const { data: habit } = await supabase
+            .from("habits")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("title", selectedTemplate.title)
+            .single();
+
+          if (habit) {
+            const { error: statsError } = await supabase.from("habit_statistics").insert({
+              user_id: user.id,
+              habit_id: habit.id,
+              completion_rate: 0,
+              streak_history: [0],
+              monthly_completions: 0,
+            });
+
+            if (statsError) throw statsError;
+          }
         }
       }
 
@@ -199,6 +229,32 @@ const Onboarding = () => {
                     placeholder="E.g., 75kg"
                     className="mt-1"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Choose a habit template to get started
+                  </label>
+                  <Select
+                    value={formData.selectedTemplate}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, selectedTemplate: value })
+                    }
+                  >
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue placeholder="Select a template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templates?.map((template) => (
+                        <SelectItem
+                          key={template.id}
+                          value={template.id}
+                        >
+                          {template.title} - {template.description}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
