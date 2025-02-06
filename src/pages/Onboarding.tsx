@@ -1,8 +1,4 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -11,137 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
+import { OnboardingForm } from "./onboarding/OnboardingForm";
 
 const Onboarding = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    category: "",
-    description: "",
-    target: "",
-    displayName: "",
-    selectedTemplate: "",
-  });
-
-  const categories = [
-    { value: "weight_gain", label: "Weight Gain" },
-    { value: "academic", label: "Academic Goals" },
-    { value: "habits", label: "Daily Habits" },
-    { value: "fitness", label: "Fitness" },
-    { value: "career", label: "Career Growth" },
-  ];
-
-  // Fetch available habit templates
-  const { data: templates } = useQuery({
-    queryKey: ["habitTemplates"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("habit_templates")
-        .select("*")
-        .order("title");
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
-
-      // Update user's display name if provided
-      if (formData.displayName) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ display_name: formData.displayName })
-          .eq("id", user.id);
-
-        if (profileError) throw profileError;
-      }
-
-      // Insert user goals
-      const { error: goalError } = await supabase.from("user_goals").insert({
-        user_id: user.id,
-        category: formData.category,
-        description: formData.description,
-        target: formData.target,
-      });
-
-      if (goalError) throw goalError;
-
-      // If a template was selected, create habits from the template
-      if (formData.selectedTemplate && templates) {
-        const selectedTemplate = templates.find(t => t.id === formData.selectedTemplate);
-        
-        if (selectedTemplate) {
-          const { error: habitError } = await supabase.from("habits").insert({
-            user_id: user.id,
-            title: selectedTemplate.title,
-            description: selectedTemplate.description,
-            category: formData.category,
-            frequency: selectedTemplate.frequency,
-            theme: selectedTemplate.theme,
-            duration_minutes: selectedTemplate.duration_minutes,
-          });
-
-          if (habitError) throw habitError;
-
-          // Initialize habit statistics
-          const { data: habit } = await supabase
-            .from("habits")
-            .select("id")
-            .eq("user_id", user.id)
-            .eq("title", selectedTemplate.title)
-            .single();
-
-          if (habit) {
-            const { error: statsError } = await supabase.from("habit_statistics").insert({
-              user_id: user.id,
-              habit_id: habit.id,
-              completion_rate: 0,
-              streak_history: [0],
-              monthly_completions: 0,
-            });
-
-            if (statsError) throw statsError;
-          }
-        }
-      }
-
-      toast({
-        title: "Welcome aboard!",
-        description: "Your goals have been saved. Let's start creating your plan!",
-      });
-
-      navigate("/create-plan");
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save your goals. Please try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -158,110 +26,7 @@ const Onboarding = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    What should we call you?
-                  </label>
-                  <Input
-                    type="text"
-                    value={formData.displayName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, displayName: e.target.value })
-                    }
-                    placeholder="Your display name"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    What's your main focus?
-                  </label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, category: value })
-                    }
-                  >
-                    <SelectTrigger className="w-full mt-1">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem
-                          key={category.value}
-                          value={category.value}
-                        >
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Tell us more about your goal
-                  </label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    placeholder="E.g., I want to gain 10kg of muscle mass in 6 months"
-                    className="mt-1"
-                    rows={4}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    What's your target?
-                  </label>
-                  <Input
-                    type="text"
-                    value={formData.target}
-                    onChange={(e) =>
-                      setFormData({ ...formData, target: e.target.value })
-                    }
-                    placeholder="E.g., 75kg"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Choose a habit template to get started
-                  </label>
-                  <Select
-                    value={formData.selectedTemplate}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, selectedTemplate: value })
-                    }
-                  >
-                    <SelectTrigger className="w-full mt-1">
-                      <SelectValue placeholder="Select a template" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {templates?.map((template) => (
-                        <SelectItem
-                          key={template.id}
-                          value={template.id}
-                        >
-                          {template.title} - {template.description}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Saving..." : "Continue to Create Plan"}
-              </Button>
-            </form>
+            <OnboardingForm />
           </CardContent>
         </Card>
       </motion.div>
@@ -270,4 +35,3 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
-
