@@ -31,6 +31,8 @@ const Onboarding = () => {
     category: "",
     description: "",
     target: "",
+    displayName: "",
+    selectedTemplate: "",
   });
 
   const categories = [
@@ -49,14 +51,49 @@ const Onboarding = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const { error } = await supabase.from("user_goals").insert({
+      // Update user's display name if provided
+      if (formData.displayName) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({ display_name: formData.displayName })
+          .eq("id", user.id);
+
+        if (profileError) throw profileError;
+      }
+
+      // Insert user goals
+      const { error: goalError } = await supabase.from("user_goals").insert({
         user_id: user.id,
         category: formData.category,
         description: formData.description,
         target: formData.target,
       });
 
-      if (error) throw error;
+      if (goalError) throw goalError;
+
+      // If a template was selected, create habits from the template
+      if (formData.selectedTemplate) {
+        const { data: template, error: templateError } = await supabase
+          .from("habit_templates")
+          .select("*")
+          .eq("id", formData.selectedTemplate)
+          .single();
+
+        if (templateError) throw templateError;
+
+        if (template) {
+          const { error: habitError } = await supabase.from("habits").insert({
+            user_id: user.id,
+            title: template.title,
+            description: template.description,
+            category: template.category,
+            frequency: template.frequency,
+            theme: template.theme,
+          });
+
+          if (habitError) throw habitError;
+        }
+      }
 
       toast({
         title: "Welcome aboard!",
@@ -93,6 +130,21 @@ const Onboarding = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    What should we call you?
+                  </label>
+                  <Input
+                    type="text"
+                    value={formData.displayName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, displayName: e.target.value })
+                    }
+                    placeholder="Your display name"
+                    className="mt-1"
+                  />
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     What's your main focus?
@@ -162,3 +214,4 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
+

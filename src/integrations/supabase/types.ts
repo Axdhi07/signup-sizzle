@@ -51,6 +51,80 @@ export type Database = {
           },
         ]
       }
+      habit_statistics: {
+        Row: {
+          completion_rate: number | null
+          created_at: string
+          habit_id: string | null
+          id: string
+          monthly_completions: number | null
+          streak_history: number[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completion_rate?: number | null
+          created_at?: string
+          habit_id?: string | null
+          id?: string
+          monthly_completions?: number | null
+          streak_history?: number[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completion_rate?: number | null
+          created_at?: string
+          habit_id?: string | null
+          id?: string
+          monthly_completions?: number | null
+          streak_history?: number[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_statistics_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: true
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habit_templates: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          frequency: string
+          id: string
+          theme: string | null
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          frequency: string
+          id?: string
+          theme?: string | null
+          title: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          frequency?: string
+          id?: string
+          theme?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       habits: {
         Row: {
           category: string | null
@@ -61,9 +135,13 @@ export type Database = {
           id: string
           last_completion_date: string | null
           priority: number | null
+          reminder_days: number[] | null
+          reminder_enabled: boolean | null
+          reminder_time: string | null
           scheduled_time: string | null
           streak: number | null
           streak_start_date: string | null
+          theme: string | null
           title: string
           total_completions: number | null
           updated_at: string
@@ -78,9 +156,13 @@ export type Database = {
           id?: string
           last_completion_date?: string | null
           priority?: number | null
+          reminder_days?: number[] | null
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
           scheduled_time?: string | null
           streak?: number | null
           streak_start_date?: string | null
+          theme?: string | null
           title: string
           total_completions?: number | null
           updated_at?: string
@@ -95,9 +177,13 @@ export type Database = {
           id?: string
           last_completion_date?: string | null
           priority?: number | null
+          reminder_days?: number[] | null
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
           scheduled_time?: string | null
           streak?: number | null
           streak_start_date?: string | null
+          theme?: string | null
           title?: string
           total_completions?: number | null
           updated_at?: string
