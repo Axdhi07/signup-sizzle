@@ -8,6 +8,7 @@ import { HabitForm } from "@/components/create-plan/HabitForm";
 import { CreatePlanHeader } from "@/components/create-plan/CreatePlanHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Flame } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const CreatePlan = () => {
   const navigate = useNavigate();
