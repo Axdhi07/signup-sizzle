@@ -12,6 +12,7 @@ import About from "./pages/About";
 import CreatePlan from "./pages/CreatePlan";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
+import Teams from "./pages/Teams";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,14 @@ const App = () => (
               </MainLayout>
             }
           />
+          <Route
+            path="/teams"
+            element={
+              <MainLayout>
+                <Teams />
+              </MainLayout>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
@@ -64,4 +73,3 @@ const App = () => (
 );
 
 export default App;
-
