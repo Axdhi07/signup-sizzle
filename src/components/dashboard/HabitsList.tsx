@@ -1,11 +1,11 @@
-
 import { useState } from "react";
-import { Flame, Play, XCircle } from "lucide-react";
+import { Flame, Play, XCircle, Coins, Edit, Trash2 } from "lucide-react";
 import { HabitCompletionChart } from "./HabitCompletionChart";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 interface Habit {
   id: string;
@@ -28,6 +28,7 @@ export const HabitsList = ({ habits }: HabitsListProps) => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const completedHabits = habits?.filter(habit => 
     habit.last_completion_date && 
@@ -37,6 +38,31 @@ export const HabitsList = ({ habits }: HabitsListProps) => {
   const totalHabits = habits?.length || 0;
   const highestStreak = habits?.reduce((max, habit) => 
     Math.max(max, habit.streak || 0), 0) || 0;
+
+  const deleteHabit = async (habitId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('habits')
+      .delete()
+      .eq('id', habitId);
+
+    if (error) {
+      toast({
+        title: "Error deleting habit",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['habits'] });
+    toast({
+      title: "Habit deleted",
+      description: "Your habit has been deleted successfully.",
+    });
+  };
 
   const startHabit = async (habit: Habit) => {
     if (activeHabit) {
@@ -219,12 +245,18 @@ export const HabitsList = ({ habits }: HabitsListProps) => {
                   {habit.description && (
                     <p className="text-sm text-gray-500 mt-1">{habit.description}</p>
                   )}
-                  {habit.streak && habit.streak > 0 && (
-                    <div className="mt-2 flex items-center text-sm text-orange-500">
-                      <Flame className="h-4 w-4 mr-1" />
-                      {habit.streak} day streak
+                  <div className="mt-2 flex items-center space-x-4">
+                    {habit.streak && habit.streak > 0 && (
+                      <div className="flex items-center text-sm text-orange-500">
+                        <Flame className="h-4 w-4 mr-1" />
+                        {habit.streak} day streak
+                      </div>
+                    )}
+                    <div className="flex items-center text-sm text-yellow-500">
+                      <Coins className="h-4 w-4 mr-1" />
+                      {habit.coin_reward} coins
                     </div>
-                  )}
+                  </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   {activeHabit === habit.id ? (
@@ -232,15 +264,35 @@ export const HabitsList = ({ habits }: HabitsListProps) => {
                       {Math.floor(timeLeft! / 60)}:{(timeLeft! % 60).toString().padStart(2, '0')}
                     </div>
                   ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startHabit(habit)}
-                      className="flex items-center"
-                    >
-                      <Play className="h-4 w-4 mr-1" />
-                      Start
-                    </Button>
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => startHabit(habit)}
+                        className="flex items-center"
+                      >
+                        <Play className="h-4 w-4 mr-1" />
+                        Start
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/create-plan?edit=${habit.id}`)}
+                        className="flex items-center"
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteHabit(habit.id)}
+                        className="flex items-center text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete
+                      </Button>
+                    </>
                   )}
                   {habit.streak === 0 && habit.last_completion_date && (
                     <Button
@@ -264,4 +316,3 @@ export const HabitsList = ({ habits }: HabitsListProps) => {
     </div>
   );
 };
-

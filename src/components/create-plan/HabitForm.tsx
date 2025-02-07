@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +13,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 
 interface UserGoal {
   id: string;
@@ -39,6 +39,30 @@ interface HabitFormProps {
 export const HabitForm = ({ onSubmit }: HabitFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const editHabitId = queryParams.get('edit');
+  
+  const { data: habitToEdit } = useQuery({
+    queryKey: ['habit', editHabitId],
+    queryFn: async () => {
+      if (!editHabitId) return null;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
+      const { data, error } = await supabase
+        .from("habits")
+        .select("*")
+        .eq("id", editHabitId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!editHabitId,
+  });
+
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
@@ -48,6 +72,20 @@ export const HabitForm = ({ onSubmit }: HabitFormProps) => {
     durationMinutes: "30",
     frequency: "daily",
   });
+
+  useEffect(() => {
+    if (habitToEdit) {
+      setFormData({
+        title: habitToEdit.title,
+        description: habitToEdit.description || "",
+        category: habitToEdit.category || "",
+        priority: habitToEdit.priority.toString(),
+        scheduledTime: habitToEdit.scheduled_time || "",
+        durationMinutes: habitToEdit.duration_minutes.toString(),
+        frequency: habitToEdit.frequency,
+      });
+    }
+  }, [habitToEdit]);
 
   const { data: userGoals } = useQuery({
     queryKey: ["userGoals"],
@@ -70,8 +108,61 @@ export const HabitForm = ({ onSubmit }: HabitFormProps) => {
     setLoading(true);
 
     try {
-      await onSubmit(formData);
-      // Reset form
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
+      if (editHabitId) {
+        // If duration changed, reset streak
+        if (habitToEdit && parseInt(formData.durationMinutes) !== habitToEdit.duration_minutes) {
+          const { error } = await supabase
+            .from("habits")
+            .update({
+              title: formData.title,
+              description: formData.description,
+              category: formData.category,
+              priority: parseInt(formData.priority),
+              scheduled_time: formData.scheduledTime,
+              duration_minutes: parseInt(formData.durationMinutes),
+              frequency: formData.frequency,
+              streak: 0, // Reset streak when duration changes
+              streak_breaks_count: (habitToEdit.streak_breaks_count || 0) + 1,
+            })
+            .eq("id", editHabitId);
+
+          if (error) throw error;
+
+          toast({
+            title: "Habit updated",
+            description: "Duration changed - streak has been reset",
+          });
+        } else {
+          // Update without resetting streak
+          const { error } = await supabase
+            .from("habits")
+            .update({
+              title: formData.title,
+              description: formData.description,
+              category: formData.category,
+              priority: parseInt(formData.priority),
+              scheduled_time: formData.scheduledTime,
+              duration_minutes: parseInt(formData.durationMinutes),
+              frequency: formData.frequency,
+            })
+            .eq("id", editHabitId);
+
+          if (error) throw error;
+
+          toast({
+            title: "Habit updated",
+            description: "Your habit has been updated successfully",
+          });
+        }
+      } else {
+        // Create new habit
+        await onSubmit(formData);
+      }
+
+      // Reset form after submission
       setFormData({
         title: "",
         description: "",
@@ -85,7 +176,7 @@ export const HabitForm = ({ onSubmit }: HabitFormProps) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create habit. Please try again.",
+        description: "Failed to save habit. Please try again.",
       });
     } finally {
       setLoading(false);

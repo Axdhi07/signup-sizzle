@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, LogOut, Settings, User } from "lucide-react";
+import { ArrowLeft, LogOut, Settings, User, Coins } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -115,57 +115,63 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             
             <div className="flex items-center">
               {profile && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-12 w-12 rounded-full"
-                    >
-                      <div className="relative">
-                        <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-gray-200">
-                          {profile.avatar_url ? (
-                            <img
-                              src={profile.avatar_url}
-                              alt={profile.display_name}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-full w-full bg-gray-100 flex items-center justify-center">
-                              <User className="h-6 w-6 text-gray-400" />
-                            </div>
-                          )}
+                <div className="flex items-center mr-4">
+                  <div className="flex items-center bg-white px-3 py-1 rounded-full shadow-sm border">
+                    <Coins className="h-4 w-4 text-yellow-500 mr-1" />
+                    <span className="text-sm font-medium">{profile.coins || 0}</span>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="relative h-12 w-12 rounded-full"
+                      >
+                        <div className="relative">
+                          <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-gray-200">
+                            {profile.avatar_url ? (
+                              <img
+                                src={profile.avatar_url}
+                                alt={profile.display_name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full bg-gray-100 flex items-center justify-center">
+                                <User className="h-6 w-6 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="absolute -bottom-1 -left-1 bg-primary text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white">
+                            {profile.level}
+                          </div>
                         </div>
-                        <div className="absolute -bottom-1 -left-1 bg-primary text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white">
-                          {profile.level}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <div className="p-2">
+                        <div className="text-sm font-medium">{profile.display_name}</div>
+                        <div className="text-xs text-gray-500">Level {profile.level}</div>
+                        <div className="mt-2">
+                          <Progress value={currentLevelProgress} className="h-2" />
+                          <div className="text-xs text-gray-500 mt-1">
+                            {profile.xp % xpToNextLevel} / {xpToNextLevel} XP to next level
+                          </div>
                         </div>
                       </div>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <div className="p-2">
-                      <div className="text-sm font-medium">{profile.display_name}</div>
-                      <div className="text-xs text-gray-500">Level {profile.level}</div>
-                      <div className="mt-2">
-                        <Progress value={currentLevelProgress} className="h-2" />
-                        <div className="text-xs text-gray-500 mt-1">
-                          {profile.xp % xpToNextLevel} / {xpToNextLevel} XP to next level
-                        </div>
-                      </div>
-                    </div>
-                    <DropdownMenuItem onClick={() => navigate("/profile/edit")}>
-                      <User className="mr-2 h-4 w-4" />
-                      Edit Profile Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/profile/customize")}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      Customize Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <DropdownMenuItem onClick={() => navigate("/profile/edit")}>
+                        <User className="mr-2 h-4 w-4" />
+                        Edit Profile Details
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/profile/customize")}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        Customize Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               )}
             </div>
           </div>
