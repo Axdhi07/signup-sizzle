@@ -23,6 +23,10 @@ interface Habit {
   description: string | null;
   streak: number | null;
   last_completion_date: string | null;
+  duration_minutes: number;
+  coin_reward: number;
+  streak_recovery_cost: number;
+  streak_breaks_count: number;
 }
 
 const Dashboard = () => {
