@@ -134,6 +134,7 @@ export type Database = {
           duration_minutes: number | null
           frequency: string
           id: string
+          label_color: string | null
           last_completion_date: string | null
           priority: number | null
           reminder_days: number[] | null
@@ -158,6 +159,7 @@ export type Database = {
           duration_minutes?: number | null
           frequency: string
           id?: string
+          label_color?: string | null
           last_completion_date?: string | null
           priority?: number | null
           reminder_days?: number[] | null
@@ -182,6 +184,7 @@ export type Database = {
           duration_minutes?: number | null
           frequency?: string
           id?: string
+          label_color?: string | null
           last_completion_date?: string | null
           priority?: number | null
           reminder_days?: number[] | null
@@ -290,9 +293,109 @@ export type Database = {
           },
         ]
       }
+      team_task_completions: {
+        Row: {
+          completed_at: string
+          id: string
+          task_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          task_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          task_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_task_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "team_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_task_votes: {
+        Row: {
+          id: string
+          task_id: string | null
+          user_id: string | null
+          voted_at: string
+        }
+        Insert: {
+          id?: string
+          task_id?: string | null
+          user_id?: string | null
+          voted_at?: string
+        }
+        Update: {
+          id?: string
+          task_id?: string | null
+          user_id?: string | null
+          voted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_task_votes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "team_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_tasks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          status: string | null
+          team_id: string | null
+          title: string
+          votes: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          status?: string | null
+          team_id?: string | null
+          title: string
+          votes?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          status?: string | null
+          team_id?: string | null
+          title?: string
+          votes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_tasks_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           created_at: string
+          created_by: string
           description: string | null
           id: string
           name: string
@@ -300,6 +403,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by: string
           description?: string | null
           id?: string
           name: string
@@ -307,6 +411,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string
           description?: string | null
           id?: string
           name?: string
@@ -349,7 +454,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      team_role: "leader" | "co_leader" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
