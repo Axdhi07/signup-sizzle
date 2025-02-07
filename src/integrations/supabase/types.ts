@@ -128,6 +128,7 @@ export type Database = {
       habits: {
         Row: {
           category: string | null
+          coin_reward: number | null
           created_at: string
           description: string | null
           duration_minutes: number | null
@@ -140,6 +141,8 @@ export type Database = {
           reminder_time: string | null
           scheduled_time: string | null
           streak: number | null
+          streak_breaks_count: number | null
+          streak_recovery_cost: number | null
           streak_start_date: string | null
           theme: string | null
           title: string
@@ -149,6 +152,7 @@ export type Database = {
         }
         Insert: {
           category?: string | null
+          coin_reward?: number | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
@@ -161,6 +165,8 @@ export type Database = {
           reminder_time?: string | null
           scheduled_time?: string | null
           streak?: number | null
+          streak_breaks_count?: number | null
+          streak_recovery_cost?: number | null
           streak_start_date?: string | null
           theme?: string | null
           title: string
@@ -170,6 +176,7 @@ export type Database = {
         }
         Update: {
           category?: string | null
+          coin_reward?: number | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
@@ -182,6 +189,8 @@ export type Database = {
           reminder_time?: string | null
           scheduled_time?: string | null
           streak?: number | null
+          streak_breaks_count?: number | null
+          streak_recovery_cost?: number | null
           streak_start_date?: string | null
           theme?: string | null
           title?: string

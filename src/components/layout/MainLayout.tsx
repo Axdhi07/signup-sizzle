@@ -1,7 +1,6 @@
-
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LogOut, Settings, User } from "lucide-react";
+import { ArrowLeft, LogOut, Settings, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +24,9 @@ interface Profile {
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const showBackArrow = location.pathname !== "/dashboard";
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -67,6 +68,16 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
+              {showBackArrow && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/dashboard")}
+                  className="mr-4"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              )}
               <div className="text-2xl font-bold text-primary">
                 HabitQuest
               </div>
