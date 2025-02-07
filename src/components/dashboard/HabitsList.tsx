@@ -86,10 +86,25 @@ export const HabitsList = ({ habits }: HabitsListProps) => {
     }
 
     // Add coins to user profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('coins')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile) {
+      toast({
+        title: "Error updating coins",
+        description: "Profile not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const { error: profileError } = await supabase
       .from('profiles')
       .update({
-        coins: supabase.rpc('increment', { amount: habit.coin_reward }),
+        coins: profile.coins + habit.coin_reward,
       })
       .eq('id', user.id);
 
@@ -249,3 +264,4 @@ export const HabitsList = ({ habits }: HabitsListProps) => {
     </div>
   );
 };
+
