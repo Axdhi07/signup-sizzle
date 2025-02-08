@@ -15,6 +15,7 @@ import Onboarding from "./pages/Onboarding";
 import Teams from "./pages/Teams";
 import Achievements from "./pages/Achievements";
 import Leaderboard from "./pages/Leaderboard";
+import ProfileEdit from "./pages/ProfileEdit";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,14 @@ const App = () => (
             element={
               <MainLayout>
                 <Leaderboard />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              <MainLayout>
+                <ProfileEdit />
               </MainLayout>
             }
           />
