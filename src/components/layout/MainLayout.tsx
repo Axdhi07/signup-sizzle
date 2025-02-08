@@ -91,24 +91,31 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 </Button>
                 <Button
                   variant="ghost"
+                  onClick={() => navigate("/teams")}
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Teams
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/achievements")}
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Achievements
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/leaderboard")}
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Leaderboard
+                </Button>
+                <Button
+                  variant="ghost"
                   onClick={() => navigate("/shop")}
                   className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   Shop
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate("/about")}
-                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  About Us
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate("/create-plan")}
-                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  Create Your Plan
                 </Button>
               </nav>
             </div>

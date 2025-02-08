@@ -13,6 +13,8 @@ import CreatePlan from "./pages/CreatePlan";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import Teams from "./pages/Teams";
+import Achievements from "./pages/Achievements";
+import Leaderboard from "./pages/Leaderboard";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +62,22 @@ const App = () => (
             element={
               <MainLayout>
                 <Teams />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/achievements"
+            element={
+              <MainLayout>
+                <Achievements />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <MainLayout>
+                <Leaderboard />
               </MainLayout>
             }
           />

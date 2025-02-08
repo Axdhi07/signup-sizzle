@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          progress: number | null
+          target: number
+          tier: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          progress?: number | null
+          target: number
+          tier: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          progress?: number | null
+          target?: number
+          tier?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       habit_logs: {
         Row: {
           coins_earned: number | null
@@ -446,9 +488,37 @@ export type Database = {
         }
         Relationships: []
       }
+      user_stats: {
+        Row: {
+          id: string
+          last_updated: string
+          user_id: string | null
+          weekly_completions: number[]
+        }
+        Insert: {
+          id?: string
+          last_updated?: string
+          user_id?: string | null
+          weekly_completions?: number[]
+        }
+        Update: {
+          id?: string
+          last_updated?: string
+          user_id?: string | null
+          weekly_completions?: number[]
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      global_leaderboard: {
+        Row: {
+          streak: number | null
+          username: string | null
+          xp: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
